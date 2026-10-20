@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MacClip - Clipboard history for macOS</title>
+<meta name="description" content="MacClip remembers your last 20 copies and pastes any of them with Option+V. Free download for Mac.">
+<link rel="icon" href="icon.png">
+<style>
+:root{
+  --bg:#ffffff; --bg-alt:#f5f5f7; --fg:#1d1d1f; --muted:#6e6e73; --line:#e3e3e8;
+  --accent:#4a5bf0; --accent-fg:#ffffff; --note-bg:#fff6e5; --note-line:#f0b429; --key-bg:#f2f2f5;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121214; --bg-alt:#1b1b1f; --fg:#f2f2f4; --muted:#a0a0a8; --line:#2c2c32;
+    --accent:#6f7dff; --accent-fg:#0e0e12; --note-bg:#2b2412; --note-line:#b8872a; --key-bg:#25252b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121214; --bg-alt:#1b1b1f; --fg:#f2f2f4; --muted:#a0a0a8; --line:#2c2c32;
+  --accent:#6f7dff; --accent-fg:#0e0e12; --note-bg:#2b2412; --note-line:#b8872a; --key-bg:#25252b;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:20px;padding:10px 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);font-size:15px}
+.bar strong{font-size:16px}
+.bar nav{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap}
+.bar nav a{color:var(--muted);text-decoration:none}
+.bar nav a:hover{color:var(--fg)}
+.bar button{background:var(--bg-alt);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;font:inherit;font-size:14px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+.hero{text-align:center;padding:64px 0 40px}
+.hero img{width:112px;height:112px;border-radius:24px}
+h1{font-size:46px;line-height:1.1;margin:18px 0 6px;letter-spacing:-.02em}
+.tag{font-size:21px;color:var(--muted);margin:0 0 26px}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-fg);text-decoration:none;font-weight:600;padding:14px 28px;border-radius:12px;font-size:18px}
+.btn:hover{filter:brightness(1.08)}
+.sub{color:var(--muted);font-size:14px;margin-top:10px}
+section{padding:28px 0}
+h2{font-size:28px;margin:0 0 12px;letter-spacing:-.01em}
+h3{font-size:19px;margin:26px 0 6px}
+p{margin:10px 0}
+kbd{background:var(--key-bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 8px;font:14px ui-monospace,Menlo,monospace;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:18px 0}
+.card{background:var(--bg-alt);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card b{display:block;margin-bottom:4px}
+.card span{color:var(--muted);font-size:15px}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:14px 0}
+ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 44px;margin:6px 0}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:600;font-size:15px;display:grid;place-items:center}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:16px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg-alt);font-weight:600}
+.table-wrap{overflow-x:auto}
+footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:14px;padding:28px 20px 40px;margin-top:30px}
+@media (max-width:640px){
+  h1{font-size:36px}
+  .bar nav{display:none}
+  .bar{padding:10px 16px}
+  .hero{padding-top:40px}
+}
+</style>
+</head>
+<body>
+<div class="bar">
+  <strong>MacClip</strong>
+  <nav aria-label="Sections">
+    <a href="#install">Install</a>
+    <a href="#setup">Set up</a>
+    <a href="#use">Use</a>
+    <a href="#help">Help</a>
+  </nav>
+  <button id="theme" type="button" aria-label="Switch light or dark theme">Theme</button>
+</div>
+
+<main class="wrap">
+  <header class="hero">
+    <img src="icon.png" alt="MacClip icon">
+    <h1>MacClip</h1>
+    <p class="tag">Clipboard history for macOS</p>
+    <a class="btn" href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg">Download MacClip for Mac</a>
+    <p class="sub">Free · macOS 13 (Ventura) or newer · Intel and Apple Silicon</p>
+  </header>
+
+  <section id="what">
+    <h2>What MacClip does</h2>
+    <p>Your Mac normally remembers only the last thing you copied. MacClip quietly remembers your <strong>last 20 copies</strong> (text, formatted text and pictures) and lets you bring any of them back in one step. Just press <kbd>Option</kbd> + <kbd>V</kbd>.</p>
+    <div class="cards">
+      <div class="card"><b>Always there</b><span>Lives in the menu bar, top right. No Dock icon, nothing in your way.</span></div>
+      <div class="card"><b>Starts by itself</b><span>Opens automatically when you log in.</span></div>
+      <div class="card"><b>Private</b><span>Everything stays on your Mac. Nothing is ever sent anywhere.</span></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <ol class="steps">
+      <li><a href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg">Download MacClip</a> (the <code>.dmg</code> file).</li>
+      <li>Double-click the downloaded file to open it.</li>
+      <li>Drag <strong>MacClip</strong> onto the <strong>Applications</strong> folder. <em>Or double-click MacClip and choose “Move to Applications”.</em></li>
+      <li>Open <strong>MacClip</strong> from your Applications folder.</li>
+    </ol>
+    <h3>If macOS says the app “cannot be opened”</h3>
+    <p>MacClip is a small independent app, so macOS shows an extra warning the first time. You only do this once:</p>
+    <ol class="steps">
+      <li>Try to open MacClip. When the warning appears, click <strong>Done</strong> (or OK).</li>
+      <li>Open <strong>System Settings → Privacy &amp; Security</strong>.</li>
+      <li>Scroll down to the message about MacClip and click <strong>Open Anyway</strong>.</li>
+      <li>Confirm with your password or Touch ID, then open MacClip again.</li>
+    </ol>
+  </section>
+
+  <section id="setup">
+    <h2>First-time setup</h2>
+    <p>The first time MacClip opens, it asks for one permission: <strong>Accessibility</strong>.</p>
+    <ul>
+      <li><strong>Why:</strong> it lets MacClip paste for you, so your choice appears right where you were typing.</li>
+      <li><strong>How:</strong> click <em>Continue</em>, then switch <strong>MacClip</strong> on in <em>System Settings → Privacy &amp; Security → Accessibility</em>.</li>
+      <li><strong>Prefer not to?</strong> MacClip still works. Your choice is copied and you press <kbd>⌘</kbd> + <kbd>V</kbd> yourself.</li>
+    </ul>
+    <p>MacClip never reads what you type and never sends anything anywhere.</p>
+  </section>
+
+  <section id="use">
+    <h2>How to use it</h2>
+    <ol class="steps">
+      <li><strong>Copy as usual</strong> with <kbd>⌘</kbd> + <kbd>C</kbd>. MacClip remembers each item.</li>
+      <li><strong>Open your history</strong> with <kbd>Option</kbd> + <kbd>V</kbd> anywhere, or click the MacClip icon in the menu bar.</li>
+      <li><strong>Pick an item.</strong> It appears where your cursor was, in the app you were using.</li>
+    </ol>
+    <div class="table-wrap">
+    <table>
+      <tr><th>To do this</th><th>Do this</th></tr>
+      <tr><td>Move through the list</td><td><kbd>↑</kbd> <kbd>↓</kbd></td></tr>
+      <tr><td>Paste the highlighted item</td><td><kbd>Return</kbd></td></tr>
+      <tr><td>Paste one of the first nine instantly</td><td>Press its number <kbd>1</kbd> – <kbd>9</kbd></td></tr>
+      <tr><td>Paste with the mouse</td><td>Click the item</td></tr>
+      <tr><td>Find something</td><td>Just start typing</td></tr>
+      <tr><td>Fix a typo in your search</td><td><kbd>Delete</kbd></td></tr>
+      <tr><td>Close without pasting</td><td><kbd>Esc</kbd> or click anywhere else</td></tr>
+    </table>
+    </div>
+
+    <h3>The menu-bar icon</h3>
+    <p><strong>Right-click</strong> (or Control-click) the icon for options:</p>
+    <ul>
+      <li><strong>Pause capture / Resume capture</strong>: stop remembering for a while.</li>
+      <li><strong>Clear history</strong>: delete everything MacClip has saved.</li>
+      <li><strong>Launch at login</strong>: turn automatic start on or off.</li>
+      <li><strong>Accessibility</strong>: shows whether automatic pasting is on.</li>
+      <li><strong>Quit MacClip</strong></li>
+    </ul>
+
+    <h3>Good to know</h3>
+    <ul>
+      <li>MacClip keeps the <strong>20 most recent</strong> items. Copying something you already copied just moves it back to the top.</li>
+      <li>It remembers items even after you restart your Mac.</li>
+      <li><strong>Passwords are protected.</strong> Items that password managers mark as secret are never saved, and copies made inside 1Password, Bitwarden, Dashlane and Keychain Access are ignored.</li>
+      <li>Very large items (over 1 MB of text or 25 MB of images) are skipped.</li>
+      <li>About to copy something sensitive from another app? Choose <strong>Pause capture</strong> first.</li>
+    </ul>
+  </section>
+
+  <section id="help">
+    <h2>Troubleshooting</h2>
+    <div class="table-wrap">
+    <table>
+      <tr><th>What you see</th><th>What to do</th></tr>
+      <tr><td>Picking an item copies it but doesn’t paste</td><td>Turn on MacClip in <em>System Settings → Privacy &amp; Security → Accessibility</em>. Until then, press <kbd>⌘</kbd> + <kbd>V</kbd>.</td></tr>
+      <tr><td>Pasting stopped working after an update</td><td>In the Accessibility list, remove MacClip (the <strong>–</strong> button), then add it again with <strong>+</strong>.</td></tr>
+      <tr><td><kbd>Option</kbd> + <kbd>V</kbd> types “√” or does nothing</td><td>Another app is using that shortcut. Quit it, or open MacClip from its menu-bar icon instead.</td></tr>
+      <tr><td>I can’t paste into a password box</td><td>Some secure fields block automatic pasting. The item is already copied, so press <kbd>⌘</kbd> + <kbd>V</kbd>.</td></tr>
+      <tr><td>A password I copied is in the list</td><td>Not every app marks passwords as secret. Use <strong>Clear history</strong>, and <strong>Pause capture</strong> before copying secrets.</td></tr>
+      <tr><td>I can’t see the icon</td><td>Your menu bar may be full. Close or hide some menu-bar apps.</td></tr>
+      <tr><td>Files copied in Finder aren’t listed</td><td>MacClip remembers text and pictures only.</td></tr>
+    </table>
+    </div>
+
+    <h3>Uninstall</h3>
+    <ol class="steps">
+      <li>Right-click the MacClip icon and choose <strong>Quit MacClip</strong>.</li>
+      <li>Drag <strong>MacClip</strong> from the Applications folder to the Trash.</li>
+      <li>Optional: delete the <code>MacClip</code> folder inside <code>~/Library/Application Support</code> to remove saved history.</li>
+    </ol>
+
+    <h3>Help and feedback</h3>
+    <p>Found a problem or have an idea? <a href="https://github.com/mehedihsiam/macclip/issues">Open an issue</a> and tell us what happened.</p>
+
+    <p style="text-align:center;margin-top:34px"><a class="btn" href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg">Download MacClip for Mac</a></p>
+  </section>
+</main>
+
+<footer>MacClip · Clipboard history for macOS · <a href="https://github.com/mehedihsiam/macclip">GitHub</a></footer>
+
+<script>
+(function(){
+  var b=document.getElementById('theme'),r=document.documentElement;
+  try{var s=localStorage.getItem('macclip-theme');if(s)r.setAttribute('data-theme',s);}catch(e){}
+  b.addEventListener('click',function(){
+    var dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+    var n=dark?'light':'dark';r.setAttribute('data-theme',n);
+    try{localStorage.setItem('macclip-theme',n);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

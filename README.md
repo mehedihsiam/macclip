@@ -1,0 +1,112 @@
+<p align="center">
+  <img src="docs/icon.png" width="112" alt="MacClip icon">
+</p>
+
+<h1 align="center">MacClip</h1>
+<p align="center"><strong>Clipboard history for macOS</strong><br>
+Copy as usual. Press <kbd>Option</kbd> + <kbd>V</kbd> to paste anything you copied recently.</p>
+
+<p align="center">
+  <a href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg"><strong>⬇ Download MacClip for Mac</strong></a><br>
+  <sub>Free · macOS 13 (Ventura) or newer · Intel and Apple Silicon</sub>
+</p>
+
+---
+
+## What MacClip does
+
+Your Mac normally remembers only the last thing you copied. MacClip quietly remembers your **last 20 copies** (text, formatted text and pictures) and lets you bring any of them back in one step.
+
+- Lives in the menu bar at the top right of your screen. No Dock icon, no windows in your way.
+- Starts automatically when you log in.
+- Keeps everything private on your own Mac.
+
+## Install
+
+1. **[Download MacClip](https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg)** (the `.dmg` file).
+2. Double-click the downloaded file to open it.
+3. Drag **MacClip** onto the **Applications** folder.
+   *Prefer to skip dragging? Double-click MacClip instead and choose **Move to Applications**.*
+4. Open **MacClip** from your Applications folder.
+
+### If macOS says the app "cannot be opened"
+
+MacClip is a small independent app, so macOS shows an extra warning the first time. You only need to do this once:
+
+1. Try to open MacClip. When the warning appears, click **Done** (or **OK**).
+2. Open **System Settings → Privacy & Security**.
+3. Scroll down to the message about MacClip and click **Open Anyway**.
+4. Confirm with your password or Touch ID, then open MacClip again.
+
+## First-time setup
+
+The first time MacClip opens, it asks for one permission: **Accessibility**.
+
+- **Why:** this lets MacClip paste for you, so the item you choose appears right where you were typing.
+- **How:** click **Continue**, then switch **MacClip** on in *System Settings → Privacy & Security → Accessibility*.
+- **Prefer not to?** MacClip still works. When you pick an item it is copied, and you press <kbd>⌘</kbd> + <kbd>V</kbd> yourself.
+
+MacClip never reads what you type and never sends anything anywhere.
+
+## How to use it
+
+### 1. Copy things as you normally do
+Use <kbd>⌘</kbd> + <kbd>C</kbd> as always. MacClip remembers each item.
+
+### 2. Open your history
+Press <kbd>Option</kbd> + <kbd>V</kbd> anywhere, or click the MacClip icon in the menu bar.
+
+### 3. Pick what you want
+
+| To do this | Do this |
+|---|---|
+| Move through the list | <kbd>↑</kbd> <kbd>↓</kbd> |
+| Paste the highlighted item | <kbd>Return</kbd> |
+| Paste one of the first nine instantly | Press its number <kbd>1</kbd> – <kbd>9</kbd> |
+| Paste with the mouse | Click the item |
+| Find something | Just start typing |
+| Fix a typo in your search | <kbd>Delete</kbd> |
+| Close without pasting | <kbd>Esc</kbd> or click anywhere else |
+
+The item appears where your cursor was, in the app you were using.
+
+### The menu-bar icon
+**Right-click** (or Control-click) the icon for options:
+
+- **Pause capture / Resume capture**: stop remembering for a while.
+- **Clear history**: delete everything MacClip has saved.
+- **Launch at login**: turn automatic start on or off.
+- **Accessibility**: shows whether automatic pasting is on.
+- **Quit MacClip**
+
+## Good to know
+
+- MacClip keeps the **20 most recent** items. Copying something you already copied simply moves it back to the top.
+- It remembers items even after you restart your Mac.
+- **Passwords are protected.** Items that password managers mark as secret are never saved, and copies made inside 1Password, Bitwarden, Dashlane and Keychain Access are ignored.
+- Very large items (over 1 MB of text or 25 MB of images) are skipped.
+- If you are about to copy something sensitive from another app, choose **Pause capture** first.
+
+## Troubleshooting
+
+| What you see | What to do |
+|---|---|
+| Picking an item copies it but doesn't paste | Turn on MacClip in *System Settings → Privacy & Security → Accessibility*. Until then, press <kbd>⌘</kbd> + <kbd>V</kbd>. |
+| Pasting stopped working after an update | In the Accessibility list, remove MacClip (the **–** button), then add it again with **+**. |
+| <kbd>Option</kbd> + <kbd>V</kbd> types "√" or does nothing | Another app is using that shortcut. Quit it, or open MacClip from its menu-bar icon instead. The menu will say "Shortcut unavailable". |
+| I can't paste into a password box | Some secure fields block automatic pasting. The item is already copied, so press <kbd>⌘</kbd> + <kbd>V</kbd>. |
+| A password I copied is in the list | Not every app marks passwords as secret. Use **Clear history**, and **Pause capture** before copying secrets. |
+| I can't see the icon | Your menu bar may be full. Close or hide some menu-bar apps. |
+| Files copied in Finder aren't listed | MacClip remembers text and pictures only. |
+
+## Uninstall
+
+1. Right-click the MacClip icon and choose **Quit MacClip**.
+2. Drag **MacClip** from the Applications folder to the Trash.
+3. Optional: remove saved history by deleting the folder `MacClip` inside `~/Library/Application Support`.
+
+## Help and feedback
+
+Found a problem or have an idea? [Open an issue](https://github.com/mehedihsiam/macclip/issues) and tell us what happened.
+
+<sub>Developers: see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).</sub>

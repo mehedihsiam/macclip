@@ -1,0 +1,33 @@
+MacClip - Clipboard history for macOS
+=====================================
+
+INSTALL
+  1. Drag MacClip into the Applications folder (or just double-click MacClip
+     and choose "Move to Applications").
+  2. Open MacClip. Its icon appears in the menu bar (top right).
+  3. When asked, allow Accessibility in System Settings > Privacy & Security
+     > Accessibility. This lets MacClip paste for you. Without it, MacClip
+     still copies the item and you press Command-V yourself.
+
+USE
+  Option + V (or click the menu-bar icon) opens your last 20 copies.
+  Arrow keys + Return, a number 1-9, or a click pastes. Type to search.
+
+IF macOS SAYS THE APP "CANNOT BE OPENED" OR "COULD NOT BE VERIFIED"
+  MacClip is not signed by a paid Apple developer account, so macOS shows this
+  warning on first launch. It is safe to open if you trust whoever gave it to you:
+    a) Try to open MacClip once, then go to System Settings > Privacy & Security,
+       scroll down and click "Open Anyway" next to MacClip, then confirm.
+  or
+    b) In Terminal run:
+         xattr -dr com.apple.quarantine /Applications/MacClip.app
+       and open MacClip again.
+
+PRIVACY
+  Everything stays on your Mac. MacClip has no network code. History is stored
+  in ~/Library/Application Support/MacClip. Passwords copied from password
+  managers that mark them as secret are never recorded.
+
+UNINSTALL
+  Quit MacClip from its menu-bar icon, delete it from Applications, and remove
+  ~/Library/Application Support/MacClip.
