@@ -13,7 +13,7 @@ USE
   Option + V (or click the menu-bar icon) opens your last 20 copies.
   Arrow keys + Return, a number 1-9, or a click pastes. Type to search.
 
-IF macOS SAYS THE APP "CANNOT BE OPENED" OR "COULD NOT BE VERIFIED"
+IF macOS SAYS IT "COULD NOT VERIFY MacClip IS FREE OF MALWARE"
   MacClip is not signed by a paid Apple developer account, so macOS shows this
   warning on first launch. It is safe to open if you trust whoever gave it to you:
     a) Try to open MacClip once, then go to System Settings > Privacy & Security,

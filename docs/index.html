@@ -51,6 +51,8 @@ kbd{background:var(--key-bg);border:1px solid var(--line);border-bottom-width:2p
 ol.steps{list-style:none;counter-reset:s;padding:0;margin:14px 0}
 ol.steps li{counter-increment:s;position:relative;padding:6px 0 6px 44px;margin:6px 0}
 ol.steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:600;font-size:15px;display:grid;place-items:center}
+pre{background:var(--bg-alt);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:14px}
+code{font-family:ui-monospace,Menlo,monospace}
 table{border-collapse:collapse;width:100%;margin:14px 0;font-size:16px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--bg-alt);font-weight:600}
@@ -97,19 +99,29 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;fon
 
   <section id="install">
     <h2>Install</h2>
+    <p>There are two ways. Pick whichever you prefer.</p>
+
+    <h3>Option A: One command (no warning from macOS)</h3>
+    <ol class="steps">
+      <li>Open the <strong>Terminal</strong> app (press <kbd>⌘</kbd> + <kbd>Space</kbd>, type “Terminal”, press <kbd>Return</kbd>).</li>
+      <li>Paste this line and press <kbd>Return</kbd>:</li>
+    </ol>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/mehedihsiam/macclip/main/install.sh | sh</code></pre>
+    <p>MacClip downloads, installs into your Applications folder and opens. macOS shows no security warning with this method.</p>
+
+    <h3>Option B: Download the app</h3>
     <ol class="steps">
       <li><a href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg">Download MacClip</a> (the <code>.dmg</code> file).</li>
       <li>Double-click the downloaded file to open it.</li>
       <li>Drag <strong>MacClip</strong> onto the <strong>Applications</strong> folder. <em>Or double-click MacClip and choose “Move to Applications”.</em></li>
       <li>Open <strong>MacClip</strong> from your Applications folder.</li>
     </ol>
-    <h3>If macOS says the app “cannot be opened”</h3>
-    <p>MacClip is a small independent app, so macOS shows an extra warning the first time. You only do this once:</p>
+    <p><strong>macOS may say it “could not verify MacClip is free of malware.”</strong> This appears for any app whose author hasn’t registered with Apple (which costs a yearly fee). MacClip is open source and never connects to the internet, so you can allow it once:</p>
     <ol class="steps">
-      <li>Try to open MacClip. When the warning appears, click <strong>Done</strong> (or OK).</li>
+      <li>Try to open MacClip. When the warning appears, click <strong>Done</strong>.</li>
       <li>Open <strong>System Settings → Privacy &amp; Security</strong>.</li>
       <li>Scroll down to the message about MacClip and click <strong>Open Anyway</strong>.</li>
-      <li>Confirm with your password or Touch ID, then open MacClip again.</li>
+      <li>Confirm with your password or Touch ID. MacClip opens, and you won’t be asked again.</li>
     </ol>
   </section>
 

@@ -23,20 +23,33 @@ Your Mac normally remembers only the last thing you copied. MacClip quietly reme
 
 ## Install
 
+There are two ways. Pick whichever you prefer.
+
+### Option A: One command (no warning from macOS)
+
+1. Open the **Terminal** app (press <kbd>⌘</kbd> + <kbd>Space</kbd>, type "Terminal", press <kbd>Return</kbd>).
+2. Paste this line and press <kbd>Return</kbd>:
+
+```
+curl -fsSL https://raw.githubusercontent.com/mehedihsiam/macclip/main/install.sh | sh
+```
+
+MacClip downloads, installs into your Applications folder and opens. macOS shows no security warning with this method.
+
+### Option B: Download the app
+
 1. **[Download MacClip](https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg)** (the `.dmg` file).
 2. Double-click the downloaded file to open it.
 3. Drag **MacClip** onto the **Applications** folder.
    *Prefer to skip dragging? Double-click MacClip instead and choose **Move to Applications**.*
 4. Open **MacClip** from your Applications folder.
 
-### If macOS says the app "cannot be opened"
+**macOS may say it "could not verify MacClip is free of malware."** This appears for any app that its author hasn't registered with Apple (which costs a yearly fee). MacClip is open source and never connects to the internet, so you can allow it once:
 
-MacClip is a small independent app, so macOS shows an extra warning the first time. You only need to do this once:
-
-1. Try to open MacClip. When the warning appears, click **Done** (or **OK**).
+1. Try to open MacClip. When the warning appears, click **Done**.
 2. Open **System Settings → Privacy & Security**.
 3. Scroll down to the message about MacClip and click **Open Anyway**.
-4. Confirm with your password or Touch ID, then open MacClip again.
+4. Confirm with your password or Touch ID. MacClip opens, and you won't be asked again.
 
 ## First-time setup
 
