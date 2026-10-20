@@ -86,6 +86,7 @@ fn main() {
         store: RefCell::new(store),
         tracker: RefCell::new(macclip::monitor::ChangeTracker::new()),
         hotkey_ok: Cell::new(false),
+        paste_help_shown: Cell::new(false),
         panel: ui::panel::Panel::new(mtm),
         status,
         hotkey: RefCell::new(None),

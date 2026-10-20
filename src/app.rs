@@ -33,6 +33,8 @@ pub struct App {
     pub store: RefCell<Store>,
     pub tracker: RefCell<ChangeTracker>,
     pub hotkey_ok: Cell<bool>,
+    /// Whether the "cannot auto-paste" explanation was already shown this session.
+    pub paste_help_shown: Cell<bool>,
     pub panel: Panel,
     pub status: StatusUi,
     pub hotkey: RefCell<Option<GlobalHotKeyManager>>,
@@ -421,10 +423,38 @@ impl App {
                 paste::send_cmd_v();
             });
         } else {
+            self.explain_missing_accessibility();
+        }
+    }
+
+    /// Selecting an item without Accessibility trust only copies it. Say so
+    /// clearly (once per session with a dialog, afterwards a notification).
+    fn explain_missing_accessibility(&self) {
+        if self.paste_help_shown.replace(true) {
             paste::notify(
                 "Copied to clipboard",
-                "Press ⌘V to paste. Enable MacClip in Privacy & Security → Accessibility for auto-paste.",
+                "Press ⌘V to paste. Auto-paste needs Accessibility access.",
             );
+            return;
+        }
+        let alert = NSAlert::new(self.mtm);
+        alert.setMessageText(&objc2_foundation::NSString::from_str(
+            "MacClip can't paste automatically yet",
+        ));
+        alert.setInformativeText(&objc2_foundation::NSString::from_str(
+            "The item you chose is copied. Press ⌘V to paste it.\n\n\
+             To let MacClip paste for you, switch it on in System Settings → Privacy & Security → Accessibility.\n\n\
+             If MacClip is already in that list (for example after an update), select it, click − to remove it, then add it again with +.",
+        ));
+        alert.addButtonWithTitle(&objc2_foundation::NSString::from_str(
+            "Open Accessibility Settings",
+        ));
+        alert.addButtonWithTitle(&objc2_foundation::NSString::from_str("Not now"));
+        #[allow(deprecated)]
+        NSApplication::sharedApplication(self.mtm).activateIgnoringOtherApps(true);
+        if alert.runModal() == 1000 {
+            permissions::prompt();
+            permissions::open_settings();
         }
     }
 
