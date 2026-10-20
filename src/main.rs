@@ -87,6 +87,8 @@ fn main() {
         tracker: RefCell::new(macclip::monitor::ChangeTracker::new()),
         hotkey_ok: Cell::new(false),
         paste_help_shown: Cell::new(false),
+        perm_timer: RefCell::new(None),
+        perm_attempts: Cell::new(0),
         panel: ui::panel::Panel::new(mtm),
         status,
         hotkey: RefCell::new(None),
@@ -115,9 +117,10 @@ fn main() {
 
     let t = app.status.start_timer(poll_secs);
     app.timers.borrow_mut().push(t);
-    app.status.schedule_first_run(0.8);
     if std::env::var_os("MACCLIP_SELFTEST").is_some() {
         app.status.schedule_selftest(2.0);
+    } else {
+        app.status.schedule_first_run(0.8);
     }
 
     log::info!("MacClip started");

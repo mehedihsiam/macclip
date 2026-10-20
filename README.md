@@ -63,13 +63,23 @@ To update later, run `brew upgrade --cask macclip`. To remove MacClip, run `brew
 
 ## First-time setup
 
-The first time MacClip opens, it asks for one permission: **Accessibility**.
+When MacClip opens, it checks what it needs. If something is missing, it shows a short window explaining **what** it needs and **why**, with an **Allow Access…** button.
 
-- **Why:** this lets MacClip paste for you, so the item you choose appears right where you were typing.
-- **How:** click **Continue**, then switch **MacClip** on in *System Settings → Privacy & Security → Accessibility*.
-- **Prefer not to?** MacClip still works. When you pick an item it is copied, and you press <kbd>⌘</kbd> + <kbd>V</kbd> yourself.
+**Accessibility** lets MacClip paste for you, so the item you choose appears right where you were typing.
+
+1. Click **Allow Access…**
+2. In *System Settings → Privacy & Security → Accessibility*, switch **MacClip** on.
+3. MacClip notices within a few seconds and tells you it is ready. No restart needed.
+
+- **Already listed but not working** (for example after an update)? Select MacClip in the list, click **–** to remove it, then add it again with **+**.
+- **Prefer not to?** MacClip still works. When you pick an item it is copied, and you press <kbd>⌘</kbd> + <kbd>V</kbd> yourself. You can tick **Don't remind me again** in that window.
+- On newer versions of macOS, if *Paste from Other Apps* is set to "Don't Allow" for MacClip, the same window will explain how to allow it.
+
+**It starts by itself.** MacClip adds itself to your login items the first time it runs, so it opens automatically every time you log in. You never need to open it again. If macOS asks you to approve it, MacClip shows you where (*System Settings → General → Login Items*). To turn this off, right-click the menu-bar icon and untick **Launch at login**.
 
 MacClip never reads what you type and never sends anything anywhere.
+
+---
 
 ## How to use it
 

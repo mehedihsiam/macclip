@@ -13,6 +13,17 @@ The system SHALL register itself as a login item on first run so it starts autom
 - **WHEN** the user logs in after a restart
 - **THEN** MacClip is running with its menu-bar icon visible
 
+### Requirement: Self-healing login item
+On every launch the system SHALL re-register itself as a login item if it is not registered, unless the user turned launch-at-login off on purpose.
+
+#### Scenario: Registration lost
+- **WHEN** MacClip is launched and is no longer a registered login item and the user never turned it off
+- **THEN** it registers itself again
+
+#### Scenario: Turned off by the user
+- **WHEN** the user unchecks "Launch at login" in the menu
+- **THEN** MacClip does not re-register itself until the user turns it back on
+
 ### Requirement: Login item approval
 If macOS requires user approval for the login item, the system SHALL tell the user and offer to open Login Items settings.
 

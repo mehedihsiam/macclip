@@ -32,3 +32,26 @@ pub fn prompt() -> bool {
 pub fn open_settings() {
     let _ = std::process::Command::new("open").arg(SETTINGS_URL).spawn();
 }
+
+/// Open the Privacy & Security pane of System Settings.
+pub fn open_privacy_settings() {
+    let _ = std::process::Command::new("open")
+        .arg("x-apple.systempreferences:com.apple.preference.security")
+        .spawn();
+}
+
+/// Has the user told macOS to never let MacClip read other apps' clipboard
+/// content (the "Paste from Other Apps" privacy setting, macOS 15.4+)?
+pub fn pasteboard_denied() -> bool {
+    use objc2_app_kit::{NSPasteboard, NSPasteboardAccessBehavior};
+    use objc2_foundation::{NSOperatingSystemVersion, NSProcessInfo};
+    let supported =
+        NSProcessInfo::processInfo().isOperatingSystemAtLeastVersion(NSOperatingSystemVersion {
+            majorVersion: 15,
+            minorVersion: 4,
+            patchVersion: 0,
+        });
+    supported
+        && NSPasteboard::generalPasteboard().accessBehavior()
+            == NSPasteboardAccessBehavior::AlwaysDeny
+}

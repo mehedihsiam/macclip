@@ -35,6 +35,8 @@ pub struct App {
     pub hotkey_ok: Cell<bool>,
     /// Whether the "cannot auto-paste" explanation was already shown this session.
     pub paste_help_shown: Cell<bool>,
+    pub perm_timer: RefCell<Option<Retained<NSTimer>>>,
+    pub perm_attempts: Cell<u32>,
     pub panel: Panel,
     pub status: StatusUi,
     pub hotkey: RefCell<Option<GlobalHotKeyManager>>,
@@ -93,7 +95,7 @@ pub fn on_selftest() {
     }
 }
 pub fn on_first_run() {
-    with_app(|a| a.first_run());
+    with_app(|a| a.startup_checks());
 }
 pub fn on_toggle_pause() {
     with_app(|a| {
@@ -114,8 +116,10 @@ pub fn on_toggle_login() {
     with_app(|a| a.toggle_login());
 }
 pub fn on_accessibility() {
-    permissions::prompt();
-    permissions::open_settings();
+    with_app(|a| a.request_accessibility());
+}
+pub fn on_perm_poll() {
+    with_app(|a| a.perm_poll());
 }
 pub fn on_quit() {
     with_app(|a| NSApplication::sharedApplication(a.mtm).terminate(None));
@@ -430,6 +434,9 @@ impl App {
     /// Selecting an item without Accessibility trust only copies it. Say so
     /// clearly (once per session with a dialog, afterwards a notification).
     fn explain_missing_accessibility(&self) {
+        if std::env::var_os("MACCLIP_SELFTEST").is_some() {
+            return; // developer self-test must never block on a dialog
+        }
         if self.paste_help_shown.replace(true) {
             paste::notify(
                 "Copied to clipboard",
@@ -453,52 +460,172 @@ impl App {
         #[allow(deprecated)]
         NSApplication::sharedApplication(self.mtm).activateIgnoringOtherApps(true);
         if alert.runModal() == 1000 {
-            permissions::prompt();
-            permissions::open_settings();
+            self.request_accessibility();
         }
     }
 
     // ---- first run, login item -------------------------------------------
 
-    fn first_run(&self) {
-        let flag = config::data_dir().join("onboarded");
-        if flag.exists() {
-            return;
+    fn flag(name: &str) -> std::path::PathBuf {
+        config::data_dir().join(name)
+    }
+
+    /// Modal question with an optional "don't remind me" checkbox.
+    /// Returns (primary button clicked, checkbox ticked).
+    fn ask(
+        &self,
+        title: &str,
+        body: &str,
+        primary: &str,
+        secondary: &str,
+        suppress: Option<&str>,
+    ) -> (bool, bool) {
+        use objc2_foundation::NSString;
+        let alert = NSAlert::new(self.mtm);
+        alert.setMessageText(&NSString::from_str(title));
+        alert.setInformativeText(&NSString::from_str(body));
+        alert.addButtonWithTitle(&NSString::from_str(primary));
+        alert.addButtonWithTitle(&NSString::from_str(secondary));
+        if let Some(label) = suppress {
+            alert.setShowsSuppressionButton(true);
+            if let Some(b) = alert.suppressionButton() {
+                b.setTitle(&NSString::from_str(label));
+            }
         }
-        match autostart::set_enabled(true) {
-            Ok(LoginState::RequiresApproval) => {
-                paste::notify(
-                    "MacClip",
-                    "Approve MacClip in System Settings → General → Login Items to start at login.",
-                );
+        #[allow(deprecated)]
+        NSApplication::sharedApplication(self.mtm).activateIgnoringOtherApps(true);
+        let clicked = alert.runModal() == 1000;
+        let ticked = alert.suppressionButton().is_some_and(|b| b.state() == 1);
+        (clicked, ticked)
+    }
+
+    /// Runs shortly after every launch.
+    fn startup_checks(&self) {
+        self.ensure_login_item();
+        self.ensure_permissions();
+    }
+
+    /// Make sure MacClip starts at login without the user opening it, unless
+    /// the user switched that off on purpose.
+    fn ensure_login_item(&self) {
+        let by_user = Self::flag("login-disabled").exists();
+        let state = match autostart::state() {
+            LoginState::Disabled if !by_user => match autostart::set_enabled(true) {
+                Ok(s) => {
+                    log::info!("login item registered: {s:?}");
+                    s
+                }
+                Err(e) => {
+                    log::warn!("could not register login item: {e}");
+                    return;
+                }
+            },
+            s => s,
+        };
+        if state == LoginState::RequiresApproval && !Self::flag("no-login-reminder").exists() {
+            let (open, never) = self.ask(
+                "Allow MacClip to start at login",
+                "So you never have to open MacClip yourself, macOS needs your approval to let it start when you log in.\n\n\
+                 Open System Settings → General → Login Items and switch MacClip on under “Allow in the Background”.",
+                "Open Login Items",
+                "Not now",
+                Some("Don't remind me again"),
+            );
+            if never {
+                let _ = std::fs::write(Self::flag("no-login-reminder"), b"1");
+            }
+            if open {
                 autostart::open_login_items_settings();
             }
-            Ok(s) => log::info!("login item: {s:?}"),
-            Err(e) => log::warn!("could not register login item (run from MacClip.app): {e}"),
         }
-        if !permissions::is_trusted() {
-            let alert = NSAlert::new(self.mtm);
-            alert.setMessageText(&objc2_foundation::NSString::from_str(
-                "MacClip needs Accessibility access",
-            ));
-            alert.setInformativeText(&objc2_foundation::NSString::from_str(
-                "To paste a history item straight into the field you are typing in, MacClip must send a ⌘V key press. \
-                 macOS requires your permission for that.\n\nMacClip never reads your keystrokes and never sends data off your Mac. \
-                 Without this permission, selecting an item still copies it so you can press ⌘V yourself.",
-            ));
-            alert.addButtonWithTitle(&objc2_foundation::NSString::from_str("Continue"));
-            alert.addButtonWithTitle(&objc2_foundation::NSString::from_str("Not now"));
-            #[allow(deprecated)]
-            NSApplication::sharedApplication(self.mtm).activateIgnoringOtherApps(true);
-            if alert.runModal() == 1000 {
-                permissions::prompt();
+    }
+
+    /// Explain and request every permission that is still missing.
+    fn ensure_permissions(&self) {
+        let trusted = permissions::is_trusted();
+        let denied = permissions::pasteboard_denied();
+        if trusted && !denied {
+            let _ = std::fs::remove_file(Self::flag("no-permission-reminder"));
+            return;
+        }
+        if Self::flag("no-permission-reminder").exists() {
+            return;
+        }
+        let mut body = String::from("MacClip needs your permission to work fully:\n\n");
+        if !trusted {
+            body.push_str(
+                "• Accessibility: lets MacClip press ⌘V for you, so the item you choose appears right where you were typing. \
+                 MacClip never reads your keystrokes.\n\n",
+            );
+        }
+        if denied {
+            body.push_str(
+                "• Paste from Other Apps: lets MacClip see what you copy so it can build your history. \
+                 It is currently set to “Don't Allow” in System Settings → Privacy & Security.\n\n",
+            );
+        }
+        body.push_str(
+            "Everything stays on your Mac; nothing is ever sent anywhere.\n\n\
+             If MacClip is already listed but doesn't work (for example after an update), select it, click − to remove it, then add it again with +.",
+        );
+        let (allow, never) = self.ask(
+            "MacClip needs your permission",
+            &body,
+            "Allow Access…",
+            "Not now",
+            Some("Don't remind me again"),
+        );
+        if never {
+            let _ = std::fs::write(Self::flag("no-permission-reminder"), b"1");
+        }
+        if !allow {
+            return;
+        }
+        if !trusted {
+            self.request_accessibility();
+        }
+        if denied {
+            permissions::open_privacy_settings();
+        }
+    }
+
+    /// Show the system Accessibility prompt, open the settings pane and watch
+    /// for the user granting it.
+    fn request_accessibility(&self) {
+        permissions::prompt();
+        permissions::open_settings();
+        self.perm_attempts.set(0);
+        if self.perm_timer.borrow().is_none() {
+            *self.perm_timer.borrow_mut() = Some(self.status.start_perm_poll(2.0));
+        }
+    }
+
+    fn perm_poll(&self) {
+        let n = self.perm_attempts.get() + 1;
+        self.perm_attempts.set(n);
+        let done = permissions::is_trusted();
+        if done || n > 300 {
+            if let Some(t) = self.perm_timer.borrow_mut().take() {
+                t.invalidate();
+            }
+            if done {
+                log::info!("accessibility granted");
+                paste::notify(
+                    "MacClip is ready",
+                    "Auto-paste is on. Press Option+V to open your clipboard history.",
+                );
             }
         }
-        let _ = std::fs::write(&flag, b"1");
     }
 
     fn toggle_login(&self) {
         let enable = autostart::state() != LoginState::Enabled;
+        // Remember an explicit "off" so it is not silently undone at next launch.
+        if enable {
+            let _ = std::fs::remove_file(Self::flag("login-disabled"));
+        } else {
+            let _ = std::fs::write(Self::flag("login-disabled"), b"1");
+        }
         match autostart::set_enabled(enable) {
             Ok(LoginState::RequiresApproval) => {
                 paste::notify(

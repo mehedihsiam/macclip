@@ -33,6 +33,11 @@ define_class!(
             crate::app::on_first_run();
         }
 
+        #[unsafe(method(permPoll:))]
+        fn perm_poll(&self, _timer: Option<&AnyObject>) {
+            crate::app::on_perm_poll();
+        }
+
         #[unsafe(method(selfTest:))]
         fn self_test(&self, _timer: Option<&AnyObject>) {
             crate::app::on_selftest();
@@ -225,6 +230,19 @@ impl StatusUi {
                 None,
                 false,
             );
+        }
+    }
+
+    /// Repeating timer used while waiting for the user to grant a permission.
+    pub fn start_perm_poll(&self, seconds: f64) -> Retained<NSTimer> {
+        unsafe {
+            NSTimer::scheduledTimerWithTimeInterval_target_selector_userInfo_repeats(
+                seconds,
+                &self.controller,
+                sel!(permPoll:),
+                None,
+                true,
+            )
         }
     }
 }
