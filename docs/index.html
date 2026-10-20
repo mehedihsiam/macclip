@@ -99,7 +99,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;fon
 
   <section id="install">
     <h2>Install</h2>
-    <p>There are two ways. Pick whichever you prefer.</p>
+    <p>There are three ways. Pick whichever you prefer.</p>
 
     <h3>Option A: One command (no warning from macOS)</h3>
     <ol class="steps">
@@ -109,7 +109,12 @@ footer{border-top:1px solid var(--line);color:var(--muted);text-align:center;fon
     <pre><code>curl -fsSL https://raw.githubusercontent.com/mehedihsiam/macclip/main/install.sh | sh</code></pre>
     <p>MacClip downloads, installs into your Applications folder and opens. macOS shows no security warning with this method.</p>
 
-    <h3>Option B: Download the app</h3>
+    <h3>Option B: Homebrew</h3>
+    <p>If you use <a href="https://brew.sh">Homebrew</a>, run this in Terminal:</p>
+    <pre><code>brew install --cask mehedihsiam/macclip/macclip</code></pre>
+    <p>To update later, run <code>brew upgrade --cask macclip</code>. To remove MacClip, run <code>brew uninstall --cask macclip</code>.</p>
+
+    <h3>Option C: Download the app</h3>
     <ol class="steps">
       <li><a href="https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg">Download MacClip</a> (the <code>.dmg</code> file).</li>
       <li>Double-click the downloaded file to open it.</li>

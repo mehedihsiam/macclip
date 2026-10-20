@@ -23,7 +23,7 @@ Your Mac normally remembers only the last thing you copied. MacClip quietly reme
 
 ## Install
 
-There are two ways. Pick whichever you prefer.
+There are three ways. Pick whichever you prefer.
 
 ### Option A: One command (no warning from macOS)
 
@@ -36,7 +36,17 @@ curl -fsSL https://raw.githubusercontent.com/mehedihsiam/macclip/main/install.sh
 
 MacClip downloads, installs into your Applications folder and opens. macOS shows no security warning with this method.
 
-### Option B: Download the app
+### Option B: Homebrew
+
+If you use [Homebrew](https://brew.sh), run this in Terminal:
+
+```
+brew install --cask mehedihsiam/macclip/macclip
+```
+
+To update later, run `brew upgrade --cask macclip`. To remove MacClip, run `brew uninstall --cask macclip`.
+
+### Option C: Download the app
 
 1. **[Download MacClip](https://github.com/mehedihsiam/macclip/releases/latest/download/MacClip.dmg)** (the `.dmg` file).
 2. Double-click the downloaded file to open it.

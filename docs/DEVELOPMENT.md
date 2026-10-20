@@ -347,3 +347,15 @@ The project uses [OpenSpec](https://github.com/Fission-AI/OpenSpec) for spec-dri
 ---
 
 MacClip — Clipboard history for macOS.
+
+
+---
+
+## Releasing a new version
+
+1. Bump `version` in `Cargo.toml`, then run `./scripts/make_dmg.sh`.
+2. Tag and publish: `git tag vX.Y.Z && git push origin vX.Y.Z`, then
+   `gh release create vX.Y.Z dist/MacClip.dmg dist/MacClip.zip --title "MacClip X.Y.Z"`.
+3. Update the Homebrew tap ([mehedihsiam/homebrew-macclip](https://github.com/mehedihsiam/homebrew-macclip)): in `Casks/macclip.rb` set `version "X.Y.Z"` and
+   `sha256` to `shasum -a 256 dist/MacClip.dmg`, commit and push. Users then get it with `brew upgrade --cask macclip`.
+   The cask removes the macOS quarantine flag after install (the app is not notarized).
